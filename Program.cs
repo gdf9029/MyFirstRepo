@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class Program
 {
-    static List<string> tasks = new List<string>();
+    static List<(string task, TimeSpan duration)> tasks = new List<(string, TimeSpan)>();
+    static Stopwatch stopwatch = new Stopwatch();
 
     static void Main()
     {
@@ -11,8 +13,8 @@ class Program
         while (true)
         {
             Console.WriteLine("\nOptions:");
-            Console.WriteLine("1. Add Task");
-            Console.WriteLine("2. View Tasks");
+            Console.WriteLine("1. Start a Task Timer");
+            Console.WriteLine("2. View Completed Tasks");
             Console.WriteLine("3. Exit");
 
             string choice = Console.ReadLine();
@@ -20,7 +22,7 @@ class Program
             switch (choice)
             {
                 case "1":
-                    AddTask();
+                    StartTaskTimer();
                     break;
                 case "2":
                     ViewTasks();
@@ -35,20 +37,29 @@ class Program
         }
     }
 
-    static void AddTask()
+    static void StartTaskTimer()
     {
-        Console.Write("Enter task: ");
-        string task = Console.ReadLine();
-        tasks.Add(task);
-        Console.WriteLine("Task added successfully!");
+        Console.Write("Enter task name: ");
+        string taskName = Console.ReadLine();
+        
+        Console.WriteLine("Task timer started. Press ENTER when done.");
+        stopwatch.Restart();  // Start tracking time
+        
+        Console.ReadLine();  // Wait for user to finish the task
+        
+        stopwatch.Stop();
+        TimeSpan elapsedTime = stopwatch.Elapsed;
+        tasks.Add((taskName, elapsedTime));
+
+        Console.WriteLine($"Task '{taskName}' completed in {elapsedTime.TotalSeconds:F2} seconds.");
     }
 
     static void ViewTasks()
     {
-        Console.WriteLine("\nYour Tasks:");
+        Console.WriteLine("\nCompleted Tasks:");
         foreach (var task in tasks)
         {
-            Console.WriteLine("- " + task);
+            Console.WriteLine($"- {task.task}: {task.duration.TotalSeconds:F2} seconds");
         }
     }
 }
